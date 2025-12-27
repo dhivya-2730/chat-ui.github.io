@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>WhatsApp Style Chat UI</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="h-screen bg-[#0f1b20] text-gray-200">
+
+<div class="flex h-full">
+
+  <!-- LEFT SIDEBAR -->
+  <div class="w-[25%] bg-[#111b21] border-r border-gray-700 flex flex-col">
+
+    <!-- Top Bar -->
+    <div class="flex items-center justify-between p-4 bg-[#202c33]">
+      <img src="" class="rounded-full">
+      <div class="flex gap-4 text-gray-400">
+        <span> WhatsApp </span>
+        <span>💬</span>
+        <span>⋮</span>
+      </div>
+    </div>
+
+    <!-- Search -->
+    <div class="p-3">
+      <input
+        class="w-full bg-[#202c33] rounded-lg px-4 py-2 text-sm focus:outline-none"
+        placeholder="Search or start a new chat" />
+    </div>
+
+    <!-- Chat List -->
+    <div class="flex-1 overflow-y-auto">
+
+      <!-- Contact 1 -->
+      <div onclick="openChat('john')" class="flex items-center gap-3 p-3 hover:bg-[#202c33] cursor-pointer">
+        <img src="https://i.pravatar.cc/40?img=1" class="rounded-full">
+        <div class="flex-1">
+          <p class="font-semibold">Yasvanth</p>
+          <p class="text-sm text-gray-400">hello</p>
+        </div>
+      </div>
+
+      <!-- Contact 2 -->
+      <div onclick="openChat('jane')" class="flex items-center gap-3 p-3 hover:bg-[#202c33] cursor-pointer">
+        <img src="https://i.pravatar.cc/40?img=2" class="rounded-full">
+        <div class="flex-1">
+          <p class="font-semibold">Mommy</p>
+          <p class="text-sm text-gray-400">Hello there!</p>
+        </div>
+      </div>
+
+      <!-- Contact 3 (NEW) -->
+      <div onclick="openChat('alex')" class="flex items-center gap-3 p-3 hover:bg-[#202c33] cursor-pointer">
+        <img src="https://i.pravatar.cc/40?img=3" class="rounded-full">
+        <div class="flex-1">
+          <p class="font-semibold">Bro</p>
+          <p class="text-sm text-gray-400">HI</p>
+        </div>
+      </div>
+
+      <!-- Contact 4 (NEW) -->
+      <div onclick="openChat('emily')" class="flex items-center gap-3 p-3 hover:bg-[#202c33] cursor-pointer">
+        <img src="https://i.pravatar.cc/40?img=4" class="rounded-full">
+        <div class="flex-1">
+          <p class="font-semibold">Daddy</p>
+          <p class="text-sm text-gray-400">Busy</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- CENTER CHAT -->
+  <div class="w-[50%] flex flex-col bg-[#0b141a]">
+
+    <!-- Chat Header -->
+    <div id="chatHeader" class="flex items-center gap-3 p-4 bg-[#202c33]">
+      <img id="chatAvatar" src="" class="rounded-full hidden">
+      <p id="chatName" class="font-semibold">Select a chat</p>
+    </div>
+
+    <!-- Encryption Banner -->
+    <div class="bg-[#182229] text-yellow-400 text-xs p-2 text-center">
+      🔒 Messages are end-to-end encrypted
+    </div>
+
+    <!-- Messages -->
+    <div id="messages" class="flex-1 p-4 space-y-3 overflow-y-auto"></div>
+
+    <!-- Input -->
+    <div class="p-4 bg-[#202c33] flex items-center gap-3">
+      <input
+        id="msgInput"
+        class="flex-1 bg-[#2a3942] rounded-lg px-4 py-2 focus:outline-none"
+        placeholder="Type a message" />
+      <button onclick="sendMessage()">➤</button>
+    </div>
+  </div>
+
+  <!-- RIGHT SEARCH PANEL -->
+  <div class="w-[25%] bg-[#111b21] border-l border-gray-700">
+    <div class="p-4 bg-[#202c33] font-semibold">Search</div>
+  </div>
+
+</div>
+
+<script>
+const chats = {
+  john: {
+    name: "Yasvanth",
+    avatar: "https://i.pravatar.cc/40?img=1",
+    messages: [
+      { from: "them", text: "Hi Ammu", time: "08:58" },
+      { from: "me", text: "hello.", time: "09:01" }
+    ]
+  },
+  jane: {
+    name: "Mommy",
+    avatar: "https://i.pravatar.cc/40?img=2",
+    messages: [
+      { from: "them", text: "Hi", time: "12:15" },
+      { from: "me", text: "Hi", time: "12:16" }
+    ]
+  },
+  alex: {
+    name: "Bro",
+    avatar: "https://i.pravatar.cc/40?img=3",
+    messages: [
+      { from: "them", text: "Meeting at 5?", time: "14:00" },
+      { from: "me", text: "Yes, works for me", time: "14:02" }
+    ]
+  },
+  emily: {
+    name: "Daddy",
+    avatar: "https://i.pravatar.cc/40?img=4",
+    messages: [
+      { from: "them", text: "send your photo.", time: "16:10" },
+      { from: "me", text: "ok daddy👍", time: "16:12" }
+    ]
+  }
+};
+
+let currentChat = "";
+
+function openChat(key) {
+  currentChat = key;
+  const chat = chats[key];
+
+  document.getElementById("chatName").innerText = chat.name;
+  const avatar = document.getElementById("chatAvatar");
+  avatar.src = chat.avatar;
+  avatar.classList.remove("hidden");
+
+  const messagesDiv = document.getElementById("messages");
+  messagesDiv.innerHTML = "";
+
+  chat.messages.forEach(msg => {
+    messagesDiv.innerHTML += msg.from === "me"
+      ? `<div class="flex justify-end">
+           <div class="bg-[#005c4b] p-3 rounded-lg max-w-xs">
+             ${msg.text}
+             <div class="text-xs text-right">${msg.time} ✓✓</div>
+           </div>
+         </div>`
+      : `<div class="flex">
+           <div class="bg-[#202c33] p-3 rounded-lg max-w-xs">
+             ${msg.text}
+             <div class="text-xs text-right text-gray-400">${msg.time}</div>
+           </div>
+         </div>`;
+  });
+
+  messagesDiv.scrollTop = messagesDiv.scrollHeight;
+}
+
+function sendMessage() {
+  if (!currentChat) return;
+
+  const input = document.getElementById("msgInput");
+  if (!input.value) return;
+
+  chats[currentChat].messages.push({
+    from: "me",
+    text: input.value,
+    time: "Now"
+  });
+
+  input.value = "";
+  openChat(currentChat);
+}
+</script>
+
+</body>
+</html>
+
